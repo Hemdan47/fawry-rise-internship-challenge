@@ -11,6 +11,9 @@ public class Cart {
     }
 
     public void add(Product product, int quantity) {
+        if (product == null) {
+            throw new IllegalArgumentException("Product cant be null");
+        }
         if (quantity <= 0) {
             throw new IllegalArgumentException("Quantity must be positive");
         }
@@ -40,5 +43,14 @@ public class Cart {
             subtotal+= item.getTotalPrice();
         }
         return subtotal;
+    }
+
+
+    public void print(){
+        System.out.print("Cart items: ");
+        for (CartItem item : items) {
+            System.out.print(item.getProduct().getName() + " (" + item.getQuantity() + ") ");
+        }
+        System.out.println();
     }
 }
