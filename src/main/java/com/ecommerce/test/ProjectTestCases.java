@@ -3,13 +3,15 @@ package com.ecommerce.test;
 import com.ecommerce.model.*;
 import com.ecommerce.service.CheckoutService;
 import com.ecommerce.exception.*;
+import com.ecommerce.repository.CustomerRepository;
+import com.ecommerce.repository.ProductRepository;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ProjectTestCases {
-    private static CheckoutService checkoutService = new CheckoutService();
+    private final static CheckoutService checkoutService = new CheckoutService();
+    private final static CustomerRepository customerRepository = new CustomerRepository();
+    private final static ProductRepository productRepository = new ProductRepository();
 
     // Main method to run all test cases
     public static void runAllTestCases() {
@@ -34,19 +36,22 @@ public class ProjectTestCases {
         System.out.println("---------------------------");
         
         try {
+            // Clear repositories and populate with test data
+            customerRepository.clear();
+            productRepository.clear();
+            
+            productRepository.add(new ShippableProduct("Cheese", 100.0, 5, LocalDate.of(2025, 12, 31), 0.2));
+            productRepository.add(new ShippableProduct("TV", 1000.0, 3, null, 5.0));
+            productRepository.add(new Product("Mobile scratch card", 50.0, 10, null));
+            customerRepository.add(new Customer("John Doe", 8000.0));
 
-            List<Product> products = new ArrayList<>();
-            products.add(new ShippableProduct("Cheese", 100.0, 5, LocalDate.of(2025, 12, 31), 0.2));
-            products.add(new ShippableProduct("TV", 1000.0, 3, null, 5.0));
-            products.add(new Product("Mobile scratch card", 50.0, 10, null));
-
-            Customer customer = new Customer("John Doe", 8000.0);
+            Customer customer = customerRepository.find("John Doe");
             Cart cart = new Cart();
             
             // Add items to cart
-            cart.add(getProduct(products, "Cheese"), 2);
-            cart.add(getProduct(products, "TV"), 1);
-            cart.add(getProduct(products, "Mobile scratch card"), 1);
+            cart.add(productRepository.find("Cheese"), 2);
+            cart.add(productRepository.find("TV"), 1);
+            cart.add(productRepository.find("Mobile scratch card"), 1);
             
             System.out.println("Customer: " + customer.getName() + ", Balance: $" + customer.getBalance());
             cart.print();
@@ -68,16 +73,18 @@ public class ProjectTestCases {
         System.out.println("-----------------------------");
         
         try {
-
-            List<Product> products = new ArrayList<>();
-            products.add(new ShippableProduct("TV", 1000.0, 3, null, 5.0));
+            // Clear repositories and populate with test data
+            customerRepository.clear();
+            productRepository.clear();
             
+            productRepository.add(new ShippableProduct("TV", 1000.0, 3, null, 5.0));
+            customerRepository.add(new Customer("Jane Smith", 100.0));
 
-            Customer customer = new Customer("Jane Smith", 100.0);
+            Customer customer = customerRepository.find("Jane Smith");
             Cart cart = new Cart();
             
             // Add expensive items to cart
-            cart.add(getProduct(products, "TV"), 1); // $1000 + shipping > $100 balance
+            cart.add(productRepository.find("TV"), 1); // $1000 + shipping > $100 balance
             
             System.out.println("Customer: " + customer.getName() + ", Balance: $" + customer.getBalance());
             cart.print();
@@ -101,16 +108,18 @@ public class ProjectTestCases {
         System.out.println("-----------------------------");
         
         try {
-
-            List<Product> products = new ArrayList<>();
-            products.add(new ShippableProduct("Limited Item", 200.0, 1, null, 1.0));
+            // Clear repositories and populate with test data
+            customerRepository.clear();
+            productRepository.clear();
             
+            productRepository.add(new ShippableProduct("Limited Item", 200.0, 1, null, 1.0));
+            customerRepository.add(new Customer("Alice Brown", 5000.0));
 
-            Customer customer = new Customer("Alice Brown", 5000.0);
+            Customer customer = customerRepository.find("Alice Brown");
             Cart cart = new Cart();
             
             // Try to add more items than available
-            cart.add(getProduct(products, "Limited Item"), 5); // Only 1 available
+            cart.add(productRepository.find("Limited Item"), 5); // Only 1 available
             
             System.out.println("Customer: " + customer.getName() + ", Balance: $" + customer.getBalance());
             System.out.println("Attempting to add 5 Limited Items (only 1 available)");
@@ -134,16 +143,17 @@ public class ProjectTestCases {
         System.out.println("------------------------");
         
         try {
-
-            List<Product> products = new ArrayList<>();
-            products.add(new ShippableProduct("Milk", 25.0, 10, LocalDate.of(2025, 7, 3), 1.0)); // Expired
+            // Clear repositories and populate with test data
+            customerRepository.clear();
+            productRepository.clear();
             
+            productRepository.add(new ShippableProduct("Milk", 25.0, 10, LocalDate.of(2020, 1, 1), 1.0)); // Expired
+            customerRepository.add(new Customer("Bob Johnson", 1000.0));
 
-            Customer customer = new Customer("Bob Johnson", 1000.0);
+            Customer customer = customerRepository.find("Bob Johnson");
             Cart cart = new Cart();
             
-
-            cart.add(getProduct(products, "Milk"), 2); // Expired on 2025-07-03 (old date)
+            cart.add(productRepository.find("Milk"), 2); // Expired product
             
             System.out.println("Customer: " + customer.getName() + ", Balance: $" + customer.getBalance());
             cart.print();
@@ -167,8 +177,13 @@ public class ProjectTestCases {
         System.out.println("-------------------");
         
         try {
+            // Clear repositories and populate with test data
+            customerRepository.clear();
+            productRepository.clear();
+            
+            customerRepository.add(new Customer("John Doe", 8000.0));
 
-            Customer customer = new Customer("John Doe", 8000.0);
+            Customer customer = customerRepository.find("John Doe");
             Cart cart = new Cart();
             
             System.out.println("Customer: " + customer.getName() + ", Balance: $" + customer.getBalance());
@@ -193,20 +208,22 @@ public class ProjectTestCases {
         System.out.println("------------------------------");
         
         try {
-
-            List<Product> products = new ArrayList<>();
-            products.add(new Product("Digital Music", 15.0, 100, null));
-            products.add(new Product("E-book", 20.0, 50, null));
-            products.add(new Product("Mobile scratch card", 50.0, 10, null));
+            // Clear repositories and populate with test data
+            customerRepository.clear();
+            productRepository.clear();
             
+            productRepository.add(new Product("Digital Music", 15.0, 100, null));
+            productRepository.add(new Product("E-book", 20.0, 50, null));
+            productRepository.add(new Product("Mobile scratch card", 50.0, 10, null));
+            customerRepository.add(new Customer("Alice Brown", 5000.0));
 
-            Customer customer = new Customer("Alice Brown", 5000.0);
+            Customer customer = customerRepository.find("Alice Brown");
             Cart cart = new Cart();
             
             // Add only digital products
-            cart.add(getProduct(products, "Digital Music"), 2);
-            cart.add(getProduct(products, "E-book"), 3);
-            cart.add(getProduct(products, "Mobile scratch card"), 1);
+            cart.add(productRepository.find("Digital Music"), 2);
+            cart.add(productRepository.find("E-book"), 3);
+            cart.add(productRepository.find("Mobile scratch card"), 1);
             
             System.out.println("Customer: " + customer.getName() + ", Balance: $" + customer.getBalance());
             cart.print();
@@ -229,18 +246,20 @@ public class ProjectTestCases {
         System.out.println("-------------------------------");
         
         try {
-
-            List<Product> products = new ArrayList<>();
-            products.add(new Product("Digital Music", 15.0, 100, null));
-            products.add(new Product("E-book", 20.0, 50, null));
+            // Clear repositories and populate with test data
+            customerRepository.clear();
+            productRepository.clear();
             
+            productRepository.add(new Product("Digital Music", 15.0, 100, null));
+            productRepository.add(new Product("E-book", 20.0, 50, null));
+            customerRepository.add(new Customer("Bob Johnson", 35.0));
 
-            Customer customer = new Customer("Bob Johnson", 35.0);
+            Customer customer = customerRepository.find("Bob Johnson");
             Cart cart = new Cart();
             
             // Add items that cost exactly $35
-            cart.add(getProduct(products, "Digital Music"), 1); // $15
-            cart.add(getProduct(products, "E-book"), 1); // $20
+            cart.add(productRepository.find("Digital Music"), 1); // $15
+            cart.add(productRepository.find("E-book"), 1); // $20
             // Total: $35 (exact balance)
             
             System.out.println("Customer: " + customer.getName() + ", Balance: $" + customer.getBalance());
@@ -265,13 +284,15 @@ public class ProjectTestCases {
         System.out.println("-------------------------------");
         
         try {
-
-            List<Product> products = new ArrayList<>();
-            products.add(new ShippableProduct("Cheese", 100.0, 5, LocalDate.of(2025, 12, 31), 0.2));
-            products.add(new ShippableProduct("TV", 1000.0, 3, null, 5.0));
+            // Clear repositories and populate with test data
+            customerRepository.clear();
+            productRepository.clear();
             
+            productRepository.add(new ShippableProduct("Cheese", 100.0, 5, LocalDate.of(2025, 12, 31), 0.2));
+            productRepository.add(new ShippableProduct("TV", 1000.0, 3, null, 5.0));
+            customerRepository.add(new Customer("John Doe", 8000.0));
 
-            Customer customer = new Customer("John Doe", 8000.0);
+            Customer customer = customerRepository.find("John Doe");
             Cart cart = new Cart();
             
             System.out.println("Customer: " + customer.getName() + ", Balance: $" + customer.getBalance());
@@ -279,7 +300,7 @@ public class ProjectTestCases {
             
             // Test zero quantity
             try {
-                cart.add(getProduct(products, "Cheese"), 0);
+                cart.add(productRepository.find("Cheese"), 0);
                 System.out.println("Zero quantity test failed - Should have thrown exception");
             } catch (IllegalArgumentException e) {
                 System.out.println("Zero quantity correctly rejected: " + e.getMessage());
@@ -287,7 +308,7 @@ public class ProjectTestCases {
             
             // Test negative quantity
             try {
-                cart.add(getProduct(products, "TV"), -1);
+                cart.add(productRepository.find("TV"), -1);
                 System.out.println("Negative quantity test failed - Should have thrown exception");
             } catch (IllegalArgumentException e) {
                 System.out.println("Negative quantity correctly rejected: " + e.getMessage());
@@ -300,15 +321,5 @@ public class ProjectTestCases {
         }
         
         System.out.println();
-    }
-
-    // Helper method to get product by name from a specific list
-    private static Product getProduct(List<Product> products, String name) {
-        for (Product product : products) {
-            if (product.getName().equals(name)) {
-                return product;
-            }
-        }
-        throw new RuntimeException("Product not found: " + name);
     }
 }
