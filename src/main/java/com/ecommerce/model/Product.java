@@ -11,6 +11,16 @@ public class Product {
     private LocalDate expiryDate;
 
     public Product(String name, double price, int quantity, LocalDate expiryDate) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Product name cannot be null or empty");
+        }
+        if (price < 0) {
+            throw new IllegalArgumentException("Price cannot be negative");
+        }
+        if (quantity < 0) {
+            throw new IllegalArgumentException("Quantity cannot be negative");
+        }
+        
         this.name = name;
         this.price = price;
         this.quantity = quantity;

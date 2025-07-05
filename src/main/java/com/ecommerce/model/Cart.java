@@ -11,6 +11,9 @@ public class Cart {
     }
 
     public void add(Product product, int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be positive");
+        }
         product.checkQuantity(quantity);
         
         for (CartItem item : items) {

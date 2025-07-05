@@ -33,7 +33,7 @@ public class CheckoutService {
             }
         }
         
-        double shippingFee = shippingService.calculateShippingFee(shippableItems);
+        double shippingFee = shippingService.calculateShippingFee(shippableItems, quantities);
         double totalAmount = subtotal + shippingFee;
         
         checkoutValidator.validateCheckout(customer, cart, totalAmount);
@@ -46,6 +46,6 @@ public class CheckoutService {
 
         
         ReceiptPrinter.printShipmentNotice(shippableItems, quantities);
-        ReceiptPrinter.printCheckoutReceipt(cart, subtotal, shippingFee, totalAmount);
+        ReceiptPrinter.printCheckoutReceipt(customer, cart, subtotal, shippingFee, totalAmount);
     }
 }
