@@ -5,10 +5,10 @@ import com.ecommerce.exception.OutOfStockException;
 import java.time.LocalDate;
 
 public class Product {
-    private String name;
-    private double price;
-    private int quantity;
-    private LocalDate expiryDate;
+    protected String name;
+    protected double price;
+    protected int quantity;
+    protected LocalDate expiryDate;
 
     public Product(String name, double price, int quantity, LocalDate expiryDate) {
 
